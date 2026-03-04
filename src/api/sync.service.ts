@@ -3,7 +3,7 @@ import * as SQLite from 'expo-sqlite';
 import { getDatabase } from '../database/database';
 
 const API_URL = 'https://marine.tec.br/vistoria/vistorias.php';
-const API_TOKEN = 'Bearer 9f3b2c6a-1d2e-4b5c-9f2a-7e8b9c0d1e2f';
+const API_TOKEN = '9f3b2c6a-1d2e-4b5c-9f2a-7e8b9c0d1e2f';
 
 const DEVICE_UUID =
   Constants.installationId || Constants.sessionId || 'unknown-device';
@@ -318,7 +318,7 @@ async function callApi(action: string, body?: any, method?: 'GET' | 'POST') {
     method: method ?? (body ? 'POST' : 'GET'),
     headers: {
       'Content-Type': 'application/json',
-      Authorization: API_TOKEN,
+      Authorization: `Bearer ${API_TOKEN}`,
     },
     body: body ? JSON.stringify(body) : undefined,
   });

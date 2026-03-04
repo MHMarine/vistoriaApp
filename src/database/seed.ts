@@ -1,21 +1,21 @@
-import { SQLiteDatabase } from "expo-sqlite";
-import { uuidv4 } from "../utils/uuid";
+import { SQLiteDatabase } from 'expo-sqlite';
+import { uuidv4 } from '../utils/uuid';
 
 export async function seedDatabase(db: SQLiteDatabase) {
   // Verificamos se já existe algum síndico
-  const existentes = await db.getAllAsync("SELECT uuid FROM sindicos LIMIT 1");
+  const existentes = await db.getAllAsync('SELECT uuid FROM sindicos LIMIT 1');
 
   if (existentes.length === 0) {
-    console.log("Iniciando Seed de dados padrão...");
+    console.log('Iniciando Seed de dados padrão...');
 
     await db.withTransactionAsync(async () => {
-      const condominioUuid = "47229c87-c2c9-4dc4-be94-cfd4f2e38b9b";
-      const rootAdminUuid = "aa79b0f5-65e5-43d6-8a10-7e8b3c9ed905";
+      const condominioUuid = '47229c87-c2c9-4dc4-be94-cfd4f2e38b9b';
+      const rootAdminUuid = 'aa79b0f5-65e5-43d6-8a10-7e8b3c9ed905';
 
       // 1. Criar Síndico ADM
       await db.runAsync(
         `INSERT INTO sindicos (uuid, email, senha, nome, nivel) VALUES (?, ?, ?, ?, ?)`,
-        [rootAdminUuid, "admin@local", "123", "Administrador Geral", "ADM"],
+        [rootAdminUuid, 'adm@adm', '123', 'Administrador Geral', 'ADM'],
       );
 
       // 2. Criar um Condomínio inicial (necessário para as FKs de Grupos)
@@ -23,10 +23,10 @@ export async function seedDatabase(db: SQLiteDatabase) {
         `INSERT INTO condominios (uuid, nome, endereco, cidade, cnpj, sindico_uuid) VALUES (?, ?, ?, ?, ?, ?)`,
         [
           condominioUuid,
-          "Condomínio Central",
-          "Rua Direita, 123, Centro",
-          "São Paulo/SP",
-          "123.456.789.10",
+          'Condomínio Central',
+          'Rua Direita, 123, Centro',
+          'São Paulo/SP',
+          '123.456.789.10',
           rootAdminUuid,
         ],
       );
@@ -34,29 +34,29 @@ export async function seedDatabase(db: SQLiteDatabase) {
       // 3. Criar Grupos e Itens
       const estruturaInicial = [
         {
-          nome: "Area Comum",
+          nome: 'Area Comum',
           prazo: 6,
-          itens: ["Estacionamento", "Portaria", "Portões"],
+          itens: ['Estacionamento', 'Portaria', 'Portões'],
         },
         {
-          nome: "Segurança",
+          nome: 'Segurança',
           prazo: 2,
-          itens: ["Alarmes", "Câmeras", "Extintores"],
+          itens: ['Alarmes', 'Câmeras', 'Extintores'],
         },
         {
-          nome: "Estrutura",
+          nome: 'Estrutura',
           prazo: 6,
-          itens: ["Caixa d'água", "Fachada", "Telhado"],
+          itens: ["Caixa d'água", 'Fachada', 'Telhado'],
         },
         {
-          nome: "Iluminação",
+          nome: 'Iluminação',
           prazo: 3,
-          itens: ["Estacionamento", "Halls", "Portaria"],
+          itens: ['Estacionamento', 'Halls', 'Portaria'],
         },
         {
-          nome: "Limpeza",
+          nome: 'Limpeza',
           prazo: 1,
-          itens: ["Portaria", "Halls", "Estacionamento"],
+          itens: ['Portaria', 'Halls', 'Estacionamento'],
         },
       ];
 
@@ -75,6 +75,6 @@ export async function seedDatabase(db: SQLiteDatabase) {
         }
       }
     });
-    console.log("Seed finalizado!");
+    console.log('Seed finalizado!');
   }
 }

@@ -1,11 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import {
   Stack,
   useFocusEffect,
   useLocalSearchParams,
   useRouter,
-} from "expo-router";
-import { useCallback, useState } from "react";
+} from 'expo-router';
+import { useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -13,9 +13,9 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { syncNow } from "../../src/api/sync.service";
-import { getDatabase } from "../../src/database/database";
+} from 'react-native';
+import { syncNow } from '../../src/api/sync.service';
+import { getDatabase } from '../../src/database/database';
 
 export default function Dashboard() {
   const [condominios, setCondominios] = useState<any[]>([]);
@@ -28,34 +28,35 @@ export default function Dashboard() {
 
   const handleSync = async () => {
     try {
-      Alert.alert("Sincronização", "Iniciando...");
+      Alert.alert('Sincronização', 'Iniciando...');
       await syncNow(params.uuid);
-      Alert.alert("Sucesso", "Dados atualizados!");
-    } catch {
-      Alert.alert("Erro", "Falha na sincronização");
+      Alert.alert('Sucesso', 'Dados atualizados!');
+    } catch (err) {
+      console.error('Erro na sincronização:', err);
+      Alert.alert('Erro', 'Falha na sincronização');
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      carregarCondominios();
-    }, []),
-  );
+      async function carregar() {
+        const db = await getDatabase();
+        const result = await db.getAllAsync(
+          `
+        SELECT *
+        FROM condominios
+        WHERE ativo = 1
+          AND sindico_uuid = ?
+        ORDER BY nome
+        `,
+          [params.uuid],
+        );
+        setCondominios(result);
+      }
 
-  async function carregarCondominios() {
-    const db = await getDatabase();
-    const result = await db.getAllAsync(
-      `
-    SELECT *
-    FROM condominios
-    WHERE ativo = 1
-      AND sindico_uuid = ?
-    ORDER BY nome
-    `,
-      [params.uuid],
-    );
-    setCondominios(result);
-  }
+      carregar();
+    }, [params.uuid]),
+  );
 
   return (
     <View style={styles.container}>
@@ -64,13 +65,13 @@ export default function Dashboard() {
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <Text style={styles.welcomeText} numberOfLines={1}>
-            Olá, {params.nome || "Síndico"}
+            Olá, {params.nome || 'Síndico'}
           </Text>
           <View
             style={[
               styles.badge,
               {
-                backgroundColor: params.nivel === "ADM" ? "#6f42c1" : "#28a745",
+                backgroundColor: params.nivel === 'ADM' ? '#6f42c1' : '#28a745',
               },
             ]}
           >
@@ -79,12 +80,12 @@ export default function Dashboard() {
         </View>
 
         <View style={styles.headerActions}>
-          {params.nivel === "ADM" && (
+          {params.nivel === 'ADM' && (
             <TouchableOpacity
               style={styles.iconOnlyButton}
               onPress={() =>
                 router.push({
-                  pathname: "/configuracoes/sindicos",
+                  pathname: '/configuracoes/sindicos',
                   params: { uuidLogado: params.uuid },
                 })
               }
@@ -98,7 +99,7 @@ export default function Dashboard() {
             style={styles.iconOnlyButton}
             onPress={() =>
               router.push({
-                pathname: "/configuracoes/condominios",
+                pathname: '/configuracoes/condominios',
                 params: { sindicoUuid: params.uuid },
               })
             }
@@ -125,14 +126,14 @@ export default function Dashboard() {
                 <Text style={styles.cardTitle}>{item.nome}</Text>
                 <Text style={styles.cardSubtitle}>{item.endereco}</Text>
                 <Text style={styles.cardSubtitle}>
-                  {item.cidade ? `${item.cidade}` : ""}
+                  {item.cidade ? `${item.cidade}` : ''}
                 </Text>
               </View>
 
               <TouchableOpacity
                 onPress={() => {
                   router.push({
-                    pathname: "/vistoria/vistoria-execucao",
+                    pathname: '/vistoria/vistoria-execucao',
                     params: {
                       condominioUuid: item.uuid,
                       condominioNome: item.nome,
@@ -152,7 +153,7 @@ export default function Dashboard() {
                 style={styles.footerTab}
                 onPress={() =>
                   router.push({
-                    pathname: "/configuracoes/grupos",
+                    pathname: '/configuracoes/grupos',
                     params: {
                       condominioUuid: item.uuid,
                       condominioNome: item.nome,
@@ -169,7 +170,7 @@ export default function Dashboard() {
                 style={styles.footerTab}
                 onPress={() =>
                   router.push({
-                    pathname: "/vistoria",
+                    pathname: '/vistoria',
                     params: {
                       condominioUuid: item.uuid,
                       condominioNome: item.nome,
@@ -185,7 +186,7 @@ export default function Dashboard() {
                 style={styles.footerTab}
                 onPress={() =>
                   router.push({
-                    pathname: "/configuracoes/condominios",
+                    pathname: '/configuracoes/condominios',
                     params: {
                       uuid: item.uuid,
                       nome: item.nome,
@@ -207,7 +208,7 @@ export default function Dashboard() {
 
       <TouchableOpacity
         style={styles.btnSair}
-        onPress={() => router.replace("/auth/login")}
+        onPress={() => router.replace('/auth/login')}
       >
         <Ionicons
           name="log-out-outline"
@@ -222,120 +223,120 @@ export default function Dashboard() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f4f7f6" },
+  container: { flex: 1, backgroundColor: '#f4f7f6' },
   header: {
     paddingTop: 50,
     paddingHorizontal: 25,
     paddingBottom: 25,
-    backgroundColor: "#2c3e50",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    backgroundColor: '#2c3e50',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerActions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 5,
-    alignItems: "center",
+    alignItems: 'center',
     paddingRight: 5,
     marginBottom: -45,
   },
   iconButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     padding: 10,
     borderRadius: 12,
   },
   iconOnlyButton: {
     padding: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   syncBtnSmall: {
-    backgroundColor: "#3498db", // Destaque para o sync
+    backgroundColor: '#3498db', // Destaque para o sync
   },
   welcomeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
     marginTop: 4,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
-  badgeText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
+  badgeText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
   syncBtn: {
-    backgroundColor: "#3498db",
+    backgroundColor: '#3498db',
     padding: 12,
     borderRadius: 30,
     elevation: 3,
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     margin: 20,
-    color: "#34495e",
+    color: '#34495e',
   },
   cardInfo: {
     marginBottom: 15,
   },
-  cardAddr: { fontSize: 14, color: "#7f8c8d", marginBottom: 15 },
-  cardCity: { fontSize: 14, color: "#807f8d", marginBottom: 0, marginTop: -15 },
+  cardAddr: { fontSize: 14, color: '#7f8c8d', marginBottom: 15 },
+  cardCity: { fontSize: 14, color: '#807f8d', marginBottom: 0, marginTop: -15 },
   actionGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: '#eee',
     paddingTop: 20,
   },
   actionItem: {
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
   },
   actionLabel: {
     fontSize: 11,
-    color: "#0d6efd",
+    color: '#0d6efd',
     marginTop: 4,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   actionNew: {
     borderLeftWidth: 1,
-    borderLeftColor: "#eee",
+    borderLeftColor: '#eee',
   },
   btnSair: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 10,
     marginBottom: 40,
     padding: 15,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   userInfo: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   btnSairText: {
-    color: "#dc3545",
-    fontWeight: "bold",
+    color: '#dc3545',
+    fontWeight: 'bold',
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 15,
     padding: 16,
     marginBottom: 15,
     elevation: 4,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
   },
   cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: '#f0f0f0',
     paddingBottom: 12,
     marginBottom: 12,
   },
@@ -344,33 +345,33 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
+    fontWeight: 'bold',
+    color: '#2c3e50',
   },
   cardSubtitle: {
     fontSize: 13,
-    color: "#7f8c8d",
+    color: '#7f8c8d',
     marginTop: 2,
   },
   btnNovaVistoria: {
     marginLeft: 10,
   },
   cardFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   footerTab: {
     flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 1,
   },
   footerText: {
     fontSize: 11,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 4,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });
