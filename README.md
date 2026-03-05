@@ -1,50 +1,99 @@
-# Welcome to your Expo app 👋
+# 🏢 Aplicativo para Android: vistoriaApp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+O **vistoriaApp** é uma solução móvel de alta performance para vistorias prediais. Desenvolvido para funcionar em ambientes com conectividade nula ou instável (subsolos e áreas técnicas), ele utiliza uma estratégia **Offline-First** com sincronização bidirecional.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Funcionalidades Principais
 
-   ```bash
-   npm install
-   ```
+- **⚡ Checklists Inteligentes:** Interface rápida para marcação de conformidade (OK, NÃO OK, ND) com campo de observações.
 
-2. Start the app
+- **📶 100% Offline:** Persistência local em SQLite garantindo que nenhum dado seja perdido sem internet.
 
-   ```bash
-   npx expo start
-   ```
+- **🔄 Sync Service:** Sistema automatizado de sincronização com backend PHP/MySQL.
 
-In the output, you'll find options to open the app in a
+- **📊 Gestão Completa:** Cadastro e edição de condomínios, grupos e itens de vistoria e síndicos diretamente no app.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **🔍 Histórico Local:** Consulta rápida de vistorias anteriores por data e período.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Stack Tecnológica
 
-When you're ready, run:
+- **Mobile:** Expo & React Native (Router baseado em arquivos).
 
-```bash
-npm run reset-project
+- **Banco Local:** SQLite (expo-sqlite) para persistência offline.
+
+- **Backend de Sync:** PHP com API REST.
+
+- **Banco Remoto:** MySQL.
+
+- **Linguagem:** TypeScript para maior segurança de código.
+
+---
+
+## 📂 Estrutura do Projeto
+
+A arquitetura foi desenhada para separar claramente a interface da lógica de dados:
+
+```text
+📦vistoriaApp
+ ┣ 📂app/                  # Rotas e Telas (Expo Router)
+ ┃ ┣ 📂auth/               # Login e Cadastro
+ ┃ ┣ 📂configuracoes/      # CRUD de Condomínios, Itens e Grupos
+ ┃ ┣ 📂dashboard/          # Tela principal de seleção
+ ┃ ┗ 📂vistoria/           # Execução e Histórico de vistorias
+ ┣ 📂src/
+ ┃ ┣ 📂api/                # Serviço de Sincronização (sync.service.ts)
+ ┃ ┣ 📂database/           # SQLite Config e Scripts de Seed
+ ┃ ┣ 📂services/           # Regras de negócio (Vistorias e Itens)
+ ┃ ┗ 📂utils/              # Helpers como geradores de UUID
+ ┣ 📂backend/              # API em PHP para recebimento dos dados
+ ┗ 📂components/           # UI Components customizados
+
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## ⚙️ Configuração e Instalação
 
-To learn more about developing your project with Expo, look at the following resources:
+### Mobile (Frontend)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. Instale as dependências:
 
-## Join the community
+```bash
+npm install
 
-Join our community of developers creating universal apps.
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. Inicie o ambiente Expo:
+
+```bash
+npx expo start
+
+```
+
+### Backend (Sincronização)
+
+1. Certifique-se de que o servidor PHP (Apache/Nginx) está rodando.
+2. Configure o banco de dados utilizando o script SQL localizado em `assets/bd/vistoria_check.sql`.
+
+3. Ajuste a URL base no `sync.service.ts` para apontar para o seu servidor local.
+
+---
+
+## 📋 Como Funciona a Vistoria
+
+1.  **Início:** O administrador seleciona o condomínio no Dashboard.
+
+2.  **Execução:** Preenchimento dos itens divididos por categorias (Segurança, Limpeza, Estrutura).
+
+3.  **Registro:** Se houver falha, o app solicita detalhes (ex: "Muita sujeira" no estacionamento).
+
+4.  **Finalização:** Os dados são salvos no SQLite local com status "pendente".
+
+5.  **Sincronização:** Assim que o sinal é restaurado, o `sync.service.ts` envia os pacotes para o backend PHP.
+
+---
+
+> **Desenvolvido com foco em eficiência operacional e confiabilidade de dados.**

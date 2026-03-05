@@ -2,8 +2,8 @@ import Constants from 'expo-constants';
 import * as SQLite from 'expo-sqlite';
 import { getDatabase } from '../database/database';
 
-const API_URL = 'https://marine.tec.br/vistoria/vistorias.php';
-const API_TOKEN = '9f3b2c6a-1d2e-4b5c-9f2a-7e8b9c0d1e2f';
+const API_URL = 'url_backend_aqui/vistorias.php';
+const API_TOKEN = 'meu_token_aqui!';
 
 const DEVICE_UUID =
   Constants.installationId || Constants.sessionId || 'unknown-device';

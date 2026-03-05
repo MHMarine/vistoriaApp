@@ -1,10 +1,10 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'marine_marine');
-define('DB_PASS', 'q1w2e3r4P0O9I8U7');
-define('DB_NAME', 'marine_check');
+define('DB_USER', 'usuario_bd');
+define('DB_PASS', 'senha_bd');
+define('DB_NAME', 'nome_bd');
 
-define('API_TOKEN', '9f3b2c6a-1d2e-4b5c-9f2a-7e8b9c0d1e2f');
+define('API_TOKEN', 'token_api_aqui!');
 
 function db() {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
